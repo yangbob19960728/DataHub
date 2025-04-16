@@ -1,0 +1,42 @@
+{
+  "name": "my-pilet",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "pilet"
+  ],
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "micro-web-template": "file:../../dist/emulator/micro-web-template-1.0.0.tgz",
+    "piral-cli": "1.8.3",
+    "piral-cli-webpack5": "1.8.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router": "5.3.4",
+    "react-router-dom": "5.3.4",
+    "tslib": "2.8.1",
+    "typescript": "latest",
+    "primereact": "^10.9.4",
+    "primeicons": "^6.0.1",
+    "primeflex": "^4.0.0"
+  },
+  "scripts": {
+    "start": "pilet debug --port 3000",
+    "build": "pilet build",
+    "upgrade": "pilet upgrade",
+    "postinstall": "pilet declaration"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "importmap": {
+    "inherit": [
+      "micro-web-template"
+    ],
+    "imports": {}
+  },
+  "source": "src/index.tsx"
+}
