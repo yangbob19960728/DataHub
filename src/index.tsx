@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import type { PiletApi } from 'micro-web-template';
 import { useGlobalState } from 'piral';
+import './i18n';
 const Page = React.lazy(() => import('./Page'));
 
 export function setup(app: PiletApi) {

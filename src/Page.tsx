@@ -5,24 +5,30 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { useMemo, useState } from 'react';
 import { Button } from "primereact/button";
+import FieldMapping from './components/dataIngestion/FieldMapping';
+import { DataIngestionProvider } from './contexts/dataIngestionContext';
+import DataCleaning from './components/dataIngestion/DataCleaning';
+import DataPreview from './components/dataIngestion/DataPreview';
+import { useTranslation } from 'react-i18next';
 interface DropdownItem {
   name: string;
   code: string;
 }
 export default () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const { t } = useTranslation();
   const StepItems = [
     {
-      label: 'Connection Setup'
+      label: t('connectionSetup')
     },
     {
-      label: 'Field Mapping'
+      label: t('fieldMapping')
     },
     {
-      label: 'Data Cleaning'
+      label: t('dataCleaning')
     },
     {
-      label: 'Data Preview & Validation'
+      label: t('dataPreview')
     }
   ];
   const dropdownItems: DropdownItem[] = useMemo(
@@ -69,20 +75,23 @@ export default () => {
   }
   return (
     <>
-      <div className="col-12 h-full">
-        <div className="mt-3 md:col-12 mx-auto lg:col-10">
-          <Steps
-            model={StepItems}
-            activeIndex={currentStep}
-          />
+      <DataIngestionProvider>
+        <div className="col-12 h-full">
+          <div className="mb-5 md:col-12 mx-auto lg:col-10">
+            <Steps
+              model={StepItems}
+              activeIndex={currentStep}
+            />
+          </div>
+          {/* <div className="mt-3 md:col-12 lg:col-10"> */}
           {
-            currentStep === 0 && <div className="p-fluid mt-5">
+            currentStep === 0 && <div className="p-fluid md:col-12 lg:col-10 mx-auto">
               <div className="field grid">
                 <label
                   htmlFor="data-name"
                   className="col-12 mb-2 md:col-2 md:mb-0 justify-content-end"
                 >
-                  Data Name
+                  {t('dataName')}
                 </label>
                 <div className="col-12 md:col-10">
                   <InputText id="data-name" type="text" />
@@ -93,7 +102,7 @@ export default () => {
                   htmlFor="data-endpoint"
                   className="col-12 mb-2 md:col-2 md:mb-0 justify-content-end"
                 >
-                  Data Endpoint
+                  {t('dataEndpoint')}
                 </label>
                 <div className="col-12 md:col-10">
                   <InputText id="data-endpoint" type="text" placeholder='https://' />
@@ -104,14 +113,14 @@ export default () => {
                   htmlFor="uthentication-method"
                   className="col-12 mb-2 md:col-2 md:mb-0 justify-content-end"
                 >
-                  Authentication Method
+                  {t('authenticationMethod')}
                 </label>
                 <div className="col-12 md:col-10">
                   <InputText id="authentication-method" type="text" placeholder='API Key' />
                 </div>
               </div>
               <div className="field grid">
-                <label htmlFor="request-method" className='col-12 mb-2 md:col-2 md:mb-0 justify-content-end'>Request Method</label>
+                <label htmlFor="request-method" className='col-12 mb-2 md:col-2 md:mb-0 justify-content-end'>{t('requestMethod')}</label>
                 <div className="col-12 md:col-10">
                   <Dropdown
                     id="request-method"
@@ -129,7 +138,7 @@ export default () => {
                   htmlFor="request-parameters"
                   className="col-12 mb-2 md:col-2 md:mb-0 justify-content-end"
                 >
-                  Request Parameters
+                  {t('requestParameters')}
                 </label>
                 <div className="col-12 md:col-10">
                   <InputText id="request-parameters" type="text" />
@@ -137,11 +146,11 @@ export default () => {
               </div>
               <div className='field flex justify-content-end m'>
                 <div className='flex-none'>
-                  <Button label="Text API Connection" onClick={(e) => console.log(e)} />
+                  <Button label={t('testApiConnection')} onClick={(e) => console.log(e)} />
                 </div>
               </div>
               <div className="field grid">
-                <label htmlFor="interval" className='col-12 mb-2 md:col-2 md:mb-0 justify-content-end'>Interval</label>
+                <label htmlFor="interval" className='col-12 mb-2 md:col-2 md:mb-0 justify-content-end'>{t('interval')}</label>
                 <div className="col-12 md:col-10">
                   <Dropdown
                     id="interval"
@@ -154,7 +163,7 @@ export default () => {
                 </div>
               </div>
               <div className="field grid">
-                <label htmlFor="data-processing-method" className='col-12 mb-2 md:col-2 md:mb-0 justify-content-end'>Data Processing Method</label>
+                <label htmlFor="data-processing-method" className='col-12 mb-2 md:col-2 md:mb-0 justify-content-end'>{t('dataProcessingMethod')}</label>
                 <div className="col-12 md:col-10">
                   <Dropdown
                     id="data-processing-method"
@@ -167,7 +176,7 @@ export default () => {
                 </div>
               </div>
               <div className="field grid">
-                <label htmlFor="data-formate" className='col-12 mb-2 md:col-2 md:mb-0 justify-content-end'>Data Formate</label>
+                <label htmlFor="data-formate" className='col-12 mb-2 md:col-2 md:mb-0 justify-content-end'>{t('dataFormat')}</label>
                 <div className="col-12 md:col-10">
                   <Dropdown
                     id="data-formate"
@@ -183,22 +192,31 @@ export default () => {
 
             </div>
           }
-          <div className='flex'>
+          {
+            currentStep === 1 && <FieldMapping />
+          }
+          {
+            currentStep === 2 && <DataCleaning />
+          }
+          {
+            currentStep === 3 && <DataPreview />
+          }
+          <div className='flex mt-5'>
             {
               currentStep > 0 &&
               <div className='flex-none mr-auto'>
-                <Button label="Pre" onClick={(e) => goStep(-1)} />
+                <Button label={t('previous')} onClick={(e) => goStep(-1)} />
               </div>
             }
             {
               currentStep < StepItems.length - 1 &&
               <div className='flex-none ml-auto'>
-                <Button label="Next" onClick={(e) => goStep(1)} />
+                <Button label={t('next')} onClick={(e) => goStep(1)} />
               </div>
             }
           </div>
         </div>
-      </div>
+      </DataIngestionProvider>
     </>
   );
 };
