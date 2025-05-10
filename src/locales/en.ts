@@ -1,16 +1,33 @@
+import { clear } from "console";
+
 export default {
   "connectionSetup": "Connection Setup",
   "fieldMapping": "Field Mapping",
   "dataCleaning": "Data Cleaning",
   "dataPreview": "Data Preview & Validation",
-  "dataName": "Data Name",
-  "dataEndpoint": "Data Endpoint",
-  "authenticationMethod": "Authentication Method",
-  "requestMethod": "Request Method",
+  "dataStoreName.label": "Data Store Name",
+  "dataStoreName.invalid": "Please enter a valid Data Store Name. The name must follow table naming conventions: start with a letter, use only lowercase letters, numbers, and underscores (_).",
+  "dataStoreName.duplicate": "Data Store Name already exists. Please use a different name.",
+  "apiSourceConfiguration": "API Source Configuration",
+  "apiSourceConfiguration.invalid": "Please enter a valid URL.",
+  "authMethod.label": "Authentication Method",
+  "authMethod.none": "None",
+  "authMethod.bearer": "API Key",
+  "authMethod.basic": "Basic Auth",
+  "authMethod.apiKeyValue": "API Key Value",
+  "authMethod.apiKeyValue.invalid": "Please provide a valid API Key.",
+  "authMethod.username": "Username",
+  "authMethod.username.invalid": "Please provide a valid username.",
+  "authMethod.password": "Password",
+  "authMethod.password.invalid": "Please provide a valid password.",
+  "authMethod.invalid": "Please provide required authentication details.",
   "requestParameters": "Request Parameters",
   "testApiConnection": "Test API Connection",
+  "testApiConnection.failure": "Please try reconnecting.",
   "interval": "Interval",
-  "dataProcessingMethod": "Data Processing Method",
+  "dataProcessingMethod.label": "Data Processing Method",
+  "dataProcessingMethod.append": "Append",
+  "dataProcessingMethod.replace": "Replace",
   "dataFormat": "Data Format",
   "next": "Next",
   "previous": "Previous",
@@ -18,4 +35,27 @@ export default {
   "noData": "No Data",
   "apiFields": "API Fields",
   "fieldMappingTable": "Field Mapping Table",
+  "validation": {
+    "requiredField": "This field is required",
+    "duplicateField": "This field must be unique",
+    "jsonataSyntax": "JSONata syntax error."
+  },
+  "error": {
+    "apiConnection": "API Connection Error",
+    "apiConnectionErrorMessage": "API Connection Error. Error message is: {{message}}",
+    "saveFailed": "Failed to save. Please try again later.",
+    "unknownError": "An unknown error occurred. Please try again later."
+  },
+  "actions": {
+    "clearAll": "Clear all data",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "clear": "Clear",
+    "save": "Save",
+    "ok": "OK",
+  },
+  "homePage": {
+    "schedulingNotEnabled": "Scheduling is not enabled",
+    "create": "Create",
+  }
 }

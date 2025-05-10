@@ -1,71 +1,104 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Column } from "primereact/column";
-import { DataTable } from "primereact/datatable";
+import { DataTable as PrimeDataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
-import { DataType, RuleType, useDataIngestion } from "../../contexts/dataIngestionContext";
 import { InputSwitch } from "primereact/inputswitch";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { useTranslation } from "react-i18next";
+import { DropdownItem } from "../../constants/dropdownOptions";
+import { debounce } from "lodash";
+import jsonata from "jsonata";
+
+import { FieldMapping as FieldMappingType, DataType, RuleType, RuleValidationState } from '../../contexts/dataIngestionContext';
+import { buildCleaningRuleExpression } from '../../utils/dataUtils';
 export enum DataTableMode {
   FieldMapping = 'fieldMapping',
   DataCleaning = 'dataCleaning',
 }
-interface Props {
+interface DataTableProps {
   mode: DataTableMode;
+  fieldMappings: FieldMappingType[];
+  updateFieldMapping: <K extends keyof FieldMappingType>(index: number, field: K, value: FieldMappingType[K]) => void;
+  removeFieldMapping: (index: number) => void;
+  updateFieldPK?: (index: number, value: boolean) => void;
+  setFieldMappings?: (mappings: FieldMappingType[]) => void;
 }
-export default ({ mode }: Props) => {
-  const { fieldMappings, updateFieldMapping, removeFieldMapping } = useDataIngestion();
+const requiredStyle = {
+  color: 'var(--red-400)',
+};
+const DataTable: React.FC<DataTableProps> = ({
+  mode,
+  fieldMappings,
+  updateFieldMapping,
+  removeFieldMapping,
+  updateFieldPK,
+  setFieldMappings
+}) => {
   const { t } = useTranslation();
   const isCleaningMode = mode === DataTableMode.DataCleaning;
   const isMappingMode = mode === DataTableMode.FieldMapping;
-
-  const dataTypes = [DataType.String, DataType.Number];
-  const ruleTypes = [RuleType.Empty, RuleType.Sum, RuleType.Avg, RuleType.Max, RuleType.Min];
-  console.log('mode', mode, isCleaningMode)
   const getRuleTypes = (rowData: any) => {
-    console.log('rowData', rowData.sampleValue);
-    if (typeof rowData.sampleValue === 'string') {
+    if (rowData.id === '') {
       return [RuleType.Empty];
+    }
+    if (typeof rowData.sampleValue === 'string') {
+      return [RuleType.Empty, RuleType.Len, RuleType.UpperCase, RuleType.LowerCase, RuleType.Trim];
     }
     if (typeof rowData.sampleValue === 'number') {
       return [RuleType.Empty, RuleType.Sum, RuleType.Avg, RuleType.Max, RuleType.Min];
     }
     return [RuleType.Empty];
   };
-  function changeCleaningRule(rowData: any, value: RuleType) {
-    switch (value) {
-      case RuleType.Sum:
-        rowData.cleaningRule = `$sum(${rowData.data.path.join('.')})`;
-        break;
-      case RuleType.Avg:
-        rowData.cleaningRule = `$average(${rowData.data.path.join('.')})`;
-        break;
-      case RuleType.Max:
-        rowData.cleaningRule = `$max(${rowData.data.path.join('.')})`;
-        break;
-      case RuleType.Min:
-        rowData.cleaningRule = `$min(${rowData.data.path.join('.')})`;
-        break;
+  const getRuleStateIcon = (ruleValidationState: RuleValidationState) => {
+    switch (ruleValidationState) {
+      case RuleValidationState.Success:
+        return <i className="pi pi-check ml-3" style={{ color: 'var(--green-500)' }}></i>;
+      case RuleValidationState.Error:
+        return <i className="pi pi-times ml-3" style={{ color: 'var(--red-500)' }}></i>;
       default:
-        break;
+        return null;
     }
   }
+  function changeRuleType(index: number, rowData: any, newRuleType: RuleType) {
+    const expression = buildCleaningRuleExpression(newRuleType, rowData.data.path || []);
+    updateFieldMapping(index, 'cleaningRule', expression);
+  }
+  const getDataTypeOptions = (rawValue: any): DataType[] => {
+    if (rawValue === null || rawValue === undefined) {
+      return [DataType.Null];
+    }
 
+    const str = String(rawValue).trim();
+    // 是數字
+    if (typeof rawValue === 'number' || !isNaN(Number(str))) {
+      return [
+        DataType.String,
+        DataType.Number
+      ];
+    }
+    // 無法轉數字 → 僅能為 string
+    return [DataType.String];
+  };
   return (
     <>
-      <DataTable value={fieldMappings} emptyMessage={t("noData")}>
+      <PrimeDataTable value={fieldMappings} emptyMessage={t("noData")} scrollable reorderableRows={isMappingMode} onRowReorder={(e) => setFieldMappings(e.value as FieldMappingType[])}>
         {/* Source Field */}
+        <Column
+          style={{ width: '3rem' }}
+          body={(rowData, options) => (
+            rowData.id !== '' ? (
+              <i className="pi pi-link" style={{ fontSize: '1rem' }}></i>
+            ) : null
+          )}
+        />
         <Column
           header={t("sourceField")}
           body={(rowData, options) => (
             <InputText
               value={rowData.sourceField}
-              disabled={true}
+              disabled
               style={{ backgroundColor: "var(--surface-300)" }}
-              onChange={(e) =>
-                updateFieldMapping(options.rowIndex, 'sourceField', e.target.value)
-              }
             />
           )}
         />
@@ -76,12 +109,9 @@ export default ({ mode }: Props) => {
           body={(rowData, options) => (
             <InputText
               value={rowData.sampleValue}
-              disabled={true}
+              disabled
               style={{ backgroundColor: "var(--surface-300)" }}
-              className={"sample-value-input" + rowData.id}
-              onChange={(e) =>
-                updateFieldMapping(options.rowIndex, 'sampleValue', e.target.value)
-              }
+              className={`sample-value-input${rowData.id}`}
               tooltip={rowData.sampleValue}
               tooltipOptions={{ showOnDisabled: true, position: 'top', mouseTrack: true, mouseTrackTop: 15 }}
             />
@@ -92,15 +122,31 @@ export default ({ mode }: Props) => {
 
         {/* Target Field */}
         <Column
-          header={t("targetField")}
+          header={() => (
+            <>
+              <span style={requiredStyle}>*</span>
+              {t("targetField")}
+            </>
+          )}
           body={(rowData, options) => (
-            <InputText
-              value={rowData.targetField}
-              disabled={isCleaningMode}
-              onChange={(e) =>
-                updateFieldMapping(options.rowIndex, 'targetField', e.target.value)
+            <div className="flex flex-column">
+              <InputText
+                value={rowData.targetField}
+                disabled={isCleaningMode}
+                invalid={rowData.targetFieldTouched && rowData.targetFieldError}
+                onChange={(e) => {
+                  updateFieldMapping(options.rowIndex, 'targetField', e.target.value);
+                  updateFieldMapping(options.rowIndex, 'targetFieldTouched', true);
+                }
+                }
+              />
+              {
+                rowData.targetFieldTouched && rowData.targetFieldError && (
+                  <small className="p-error">{rowData.targetFieldError}</small>
+                )
               }
-            />
+            </div>
+
           )}
         />
 
@@ -110,7 +156,7 @@ export default ({ mode }: Props) => {
           body={(rowData, options) => (
             <Dropdown
               value={rowData.dataType}
-              options={dataTypes}
+              options={getDataTypeOptions(rowData.sampleValue)}
               disabled={isCleaningMode}
               onChange={(e) =>
                 updateFieldMapping(options.rowIndex, 'dataType', e.value)
@@ -126,7 +172,7 @@ export default ({ mode }: Props) => {
               options={getRuleTypes(rowData)}
               onChange={(e) => {
                 updateFieldMapping(options.rowIndex, 'ruleType', e.value);
-                changeCleaningRule(rowData, e.value);
+                changeRuleType(options.rowIndex, rowData, e.value);
               }
               }
             />
@@ -134,33 +180,54 @@ export default ({ mode }: Props) => {
         />)}
         {isCleaningMode && (<Column
           header={t("dataCleaningRule")}
+          style={{ minWidth: '260px' }}
           body={(rowData, options) => (
-            <InputText
-              value={rowData.cleaningRule || ''}
-              disabled={rowData.id !== ''}
-              placeholder=""
-              onChange={(e) =>
-                updateFieldMapping(options.rowIndex, 'cleaningRule', e.target.value)
-              }
-            />
+            <>
+              <div>
+                <InputText
+                  value={rowData.cleaningRule || ''}
+                  invalid={rowData.cleaningRuleTouched && rowData.cleaningRuleError}
+                  disabled={rowData.id !== '' && rowData.ruleType !== RuleType.Empty}
+                  placeholder=""
+                  onChange={(e) =>
+                    updateFieldMapping(options.rowIndex, 'cleaningRule', e.target.value)
+                  }
+                />
+                {getRuleStateIcon(rowData.ruleValidationState)}
+
+              </div>
+              <div>
+                {
+                  rowData.cleaningRuleTouched && rowData.cleaningRuleError && (
+                    <small className="p-error">{rowData.cleaningRuleError}</small>
+                  )
+                }
+              </div>
+            </>
           )}
         />)}
 
         {isCleaningMode && (
           <Column
-            header={t("pk")}
+            header={() =>
+              <>
+                <span style={requiredStyle}>*</span>
+                {t("pk")}
+              </>}
             body={(rowData, options) => (
               <InputSwitch
                 checked={rowData.isPK === true}
                 onChange={(e) =>
-                  updateFieldMapping(options.rowIndex, 'isPK', e.value)
+                  updateFieldPK(options.rowIndex, e.value)
                 }
               />
             )}
           />
 
         )}
-
+        {isMappingMode && (
+          <Column rowReorder style={{ width: '3rem' }} />
+        )}
 
         {isMappingMode && (
           <Column
@@ -173,7 +240,8 @@ export default ({ mode }: Props) => {
             )}
           />
         )}
-      </DataTable>
+      </PrimeDataTable>
     </>
   );
 }
+export default DataTable;

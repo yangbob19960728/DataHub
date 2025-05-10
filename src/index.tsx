@@ -3,10 +3,21 @@ import { Link } from 'react-router-dom';
 import type { PiletApi } from 'micro-web-template';
 import { useGlobalState } from 'piral';
 import './i18n';
-const Page = React.lazy(() => import('./Page'));
-
+import Layout from './Layout';
+const HomePage = React.lazy(() => import('./pages/Home'));
+const CreateDataStorePage = React.lazy(() => import('./pages/CreateDataStore'));
 export function setup(app: PiletApi) {
-  app.registerPage('/dataHub/load-data', Page);
+  app.registerPage('/dataHub/load-data', () => (
+    <Layout>
+      <HomePage />
+    </Layout>
+  ));
+
+  app.registerPage('/dataHub/load-data/create', () => (
+    <Layout>
+      <CreateDataStorePage />
+    </Layout>
+  ));
 
   app.showNotification('Hello from Piral!', {
     autoClose: 2000,
