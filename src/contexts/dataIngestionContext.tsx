@@ -7,7 +7,7 @@ import {
   AUTH_METHOD_OPTIONS,
 } from '../constants/dropdownOptions';
 import { debounce, DebouncedFunc } from 'lodash';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import FieldMapping from '../components/dataIngestion/FieldMapping';
 import { validateJsonataExpression, validateStep1Data, validateFieldMappings } from '../utils/validationUtils';
 
@@ -127,6 +127,7 @@ export const INITIAL_STEP1_DATA: Step1Data = {
 const DataIngestionContext = createContext<DataIngestionContextType | undefined>(undefined);
 
 export const DataIngestionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { t } = useTranslation();
   const [apiData, setApiData] = useState<any>(null);
   const [step1Data, setStep1Data] = useState<Step1Data>({ ...INITIAL_STEP1_DATA });
   const [step1Errors, setStep1Errors] = useState<Step1Errors>({
@@ -160,7 +161,6 @@ export const DataIngestionProvider: React.FC<{ children: React.ReactNode }> = ({
         const allTargetFields = updated.map((m) => m.targetField);
         const isEmpty = !(value as FieldMapping['targetField']).trim();
         const isDuplicate = allTargetFields.some((v, i) => i !== index && v === value);
-
         updatedItem.targetFieldError = isEmpty
           ? t("validation.requiredField")
           : isDuplicate
