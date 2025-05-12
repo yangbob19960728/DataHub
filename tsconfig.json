@@ -14,7 +14,10 @@
     "moduleResolution": "Bundler",
     "module": "esnext",
     "jsx": "react",
-    "importHelpers": true
+    "importHelpers": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["node", "jest", "@testing-library/jest-dom"]
   },
   "include": [
     "src"

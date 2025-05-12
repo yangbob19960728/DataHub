@@ -185,7 +185,9 @@ const ConnectionSetup: React.FC<ConnectionSetupProps> = ({
               {t('authMethod.apiKeyValue')}
             </label>
             <div className="col">
-              <InputText id="auth-method-api-key" type="text" value={step1Data.apiKey}
+              <InputText id="auth-method-api-key"
+              data-testid="auth-method-api-key"
+              type="text" value={step1Data.apiKey}
                 invalid={step1Touched.apiKey && step1Errors.apiKey ? true : false}
                 onChange={(e) => {
                   setStep1Data({ ...step1Data, apiKey: e.target.value });
@@ -316,6 +318,7 @@ const ConnectionSetup: React.FC<ConnectionSetupProps> = ({
         style={{ width: '60vw', height: '80vh' }}
         closable={false}
         onHide={closeApiDialog}
+        data-testid="dialog"
         footer={
           <div className="flex justify-content-end">
             <Button label={t('actions.ok')} onClick={closeApiDialog} raised />
