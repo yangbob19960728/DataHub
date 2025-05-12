@@ -3,7 +3,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Tooltip } from 'primereact/tooltip';
 import { Button } from 'primereact/button';
-import { Paginator } from 'primereact/paginator';
 import axios from 'axios';
 import copy from 'copy-to-clipboard';
 import { AUTH_METHOD_OPTIONS } from '../constants/dropdownOptions';
