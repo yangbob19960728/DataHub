@@ -78,6 +78,7 @@ export function useConnectionSetup({
       setApiData(data);
       setStep1Data({ ...step1Data, testApiConnection: true });
       setApiDialogVisible(true);
+      setStep1Errors(prev => ({ ...prev, testApiConnection: '' }));
     } catch (error: any) {
       console.error('API connection test failed:', error);
       setApiData(null);
