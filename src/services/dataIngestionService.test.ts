@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { dataIngestionService } from '../services/dataIngestionService';
+import { dataIngestionService } from './dataIngestionService';
 import { DataType, FieldMapping, RuleType, RuleValidationState, Step1Data } from '../contexts/dataIngestionContext';
 import { AUTH_METHOD_OPTIONS, DATA_FORMAT_OPTIONS, DATA_PROCESSING_METHODS, INTERVAL_OPTIONS, REQUEST_METHOD_OPTIONS } from '../constants/dropdownOptions';
 
