@@ -86,6 +86,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ fieldMappings, step1Data, api
         header={t('actions.clearAll')}
         visible={showClearDialog}
         style={{ width: '30vw' }}
+        data-testid="dialog"
         onHide={() => setShowClearDialog(false)}
         footer={
           <>
