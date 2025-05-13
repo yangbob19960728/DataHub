@@ -22,7 +22,7 @@ export const dataIngestionService = {
       api_token_url: step1Data.apiKey,
       api_token_body: step1Data.requestParameters,
     };
-    const response = await axios.post(`${process.env.API_HOST}/datahub/queryDataSource`, payload);
+    const response = await axios.post(`${process.env.API_HOST}/datahub/datastore/queryDataSource`, payload);
     return response.data;
   },
 
@@ -39,7 +39,7 @@ export const dataIngestionService = {
       data_source: { type: 'json', data: apiData },
       cleaning_rule: rules
     };
-    const response = await axios.post(`${process.env.API_HOST}/datahub/parse-jsonata`, payload);
+    const response = await axios.post(`${process.env.API_HOST}/datahub/datastore/parse-jsonata`, payload);
     return response.data?.data;
   },
 
