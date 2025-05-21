@@ -1,8 +1,4 @@
-export interface DropdownItem {
-  name: string;  // 顯示名稱（可對應 i18n key）
-  code: string;  // 實際值
-}
-
+import { DropdownItem } from ".";
 // API 請求方法選單
 export const REQUEST_METHOD_OPTIONS: DropdownItem[] = [
   { name: 'Get', code: 'GET' },
@@ -29,10 +25,9 @@ export const DATA_PROCESSING_METHODS: DropdownItem[] = [
   { name: 'Replace', code: 'replace' },
   { name: 'Append', code: 'append' },
 ];
-
 // 認證方式（非 Dropdown，但你可共用 interface）
 export const AUTH_METHOD_OPTIONS: DropdownItem[] = [
   { name: 'authMethod.none', code: '' },
-  { name: 'authMethod.bearer', code: 'Bearer' },
+  { name: 'authMethod.bearer', code: 'API Key' },
   { name: 'authMethod.basic', code: 'Basic' },
 ];

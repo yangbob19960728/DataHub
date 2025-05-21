@@ -1,6 +1,28 @@
 import axios from 'axios';
 import { Step1Data, FieldMapping } from '../contexts/dataIngestionContext';
+import { AUTH_METHOD_OPTIONS, DATA_PROCESSING_METHODS, INTERVAL_OPTIONS, REQUEST_METHOD_OPTIONS } from '../constants/dropdownOptions';
+enum DataStoreStatus {
+  IDLE = 0,
+  ACTIVE = 1,
+  ERROR = 2,
+}
+interface ApiResponse<T> {
+  code: string;
+  data: T;
+}
 
+interface DatastoreJob {
+  authorization_method: typeof AUTH_METHOD_OPTIONS[number]['code'];
+  data_processing_method: typeof DATA_PROCESSING_METHODS[number]['code'];
+  interval: typeof INTERVAL_OPTIONS[number]['code'];
+  isActivity: boolean;
+  job_name: string;
+  last_receive_time: Date;
+  modify_time: Date;
+  request_method: typeof REQUEST_METHOD_OPTIONS[number]['code'];
+  request_url: string;
+  status: DataStoreStatus
+}
 
 export const dataIngestionService = {
   async getExistingNames(): Promise<string[]> {
@@ -76,15 +98,20 @@ export const dataIngestionService = {
     await axios.post(`${process.env.API_HOST}/datahub/datastore-job`, payload);
   },
 
-  async getJobsList(): Promise<any[]> {
-    const response = await axios.get(`${process.env.API_HOST}/datahub/datastore-job`);
+  async getJobsList(): Promise<DatastoreJob[]> {
+    const response = await axios.get<ApiResponse<DatastoreJob[]>>(`${process.env.API_HOST}/datahub/datastore-job`);
+    console.log('response', response);
     const data = response.data;
     if (data && Array.isArray(data.data)) {
-      return data.data.map((item: any) => ({
+      return data.data.map((item: DatastoreJob) => ({
         ...item,
         isActivity: item.isActivity || false
       }));
     }
     return [];
+  },
+  async getJobDetail(jobNameList: string[]): Promise<any> {
+    const response = await Promise.all(jobNameList.map((jobName) => axios.get<ApiResponse<any>>(`${process.env.API_HOST}/datahub/datastore-job/${jobName}`)));
+    return response.map(res => res.data);
   }
 };

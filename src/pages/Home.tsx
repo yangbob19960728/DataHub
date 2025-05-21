@@ -53,7 +53,6 @@ const DataIngestionTable = () => {
         severity: 'error',
         summary: t('error.apiConnection'),
         detail: (error?.message) ? t('error.apiConnectionErrorMessage', { message: error?.message }) : t('error.unknownError'),
-        life: 500000,
       });
     } finally {
       setLoading(false);

@@ -5,7 +5,9 @@ import { useGlobalState } from 'piral';
 import './i18n';
 import Layout from './Layout';
 const HomePage = React.lazy(() => import('./pages/Home'));
+const DataProductPage = React.lazy(() => import('./pages/DataProductPage'));
 const CreateDataStorePage = React.lazy(() => import('./pages/CreateDataStore'));
+const CreateDataProductPage = React.lazy(() => import('./pages/CreateDataProduct'));
 export function setup(app: PiletApi) {
   app.registerPage('/dataHub/load-data', () => (
     <Layout>
@@ -16,6 +18,18 @@ export function setup(app: PiletApi) {
   app.registerPage('/dataHub/load-data/create', () => (
     <Layout>
       <CreateDataStorePage />
+    </Layout>
+  ));
+
+  app.registerPage('/dataHub/data-product', () => (
+    <Layout>
+      <DataProductPage />
+    </Layout>
+  ));
+
+  app.registerPage('/dataHub/data-product/create', () => (
+    <Layout>
+      <CreateDataProductPage />
     </Layout>
   ));
 

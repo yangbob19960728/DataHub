@@ -1,0 +1,4 @@
+#field-mapping-container .p-datatable .p-datatable-tbody > tr.row-error {
+  background-color: rgba(245, 155, 155, 0.594) !important;
+  color: white;
+}

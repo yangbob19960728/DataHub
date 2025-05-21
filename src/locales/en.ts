@@ -5,6 +5,7 @@ export default {
   "fieldMapping": "Field Mapping",
   "dataCleaning": "Data Cleaning",
   "dataPreview": "Data Preview & Validation",
+  "selectDataStore": "Select Data Store",
   "dataStoreName.label": "Data Store Name",
   "dataStoreName.invalid": "Please enter a valid Data Store Name. The name must follow table naming conventions: start with a letter, use only lowercase letters, numbers, and underscores (_).",
   "dataStoreName.duplicate": "Data Store Name already exists. Please use a different name.",
@@ -35,10 +36,44 @@ export default {
   "noData": "No Data",
   "apiFields": "API Fields",
   "fieldMappingTable": "Field Mapping Table",
+  "dataProductForm": {
+    "productName": {
+      "label": "Data Product Name",
+    },
+    "apiPath": {
+      "label": "API URL Path",
+      "fullUrl": "Full API URL"
+    },
+    "button": {
+      "generateNewKey": "Generate New Key",
+      "copy": "Copy",
+    },
+    "requestMethod": {
+      "label": "Request Method",
+    }
+  },
   "validation": {
     "requiredField": "This field is required",
     "duplicateField": "This field must be unique",
-    "jsonataSyntax": "JSONata syntax error."
+    "jsonataSyntax": "JSONata syntax error.",
+    "requiredProductName": "Data Product Name is required.",
+    "invalidProductName": "Name cannot contain special characters (only letters, numbers, and spaces are allowed).",
+    "duplicateProductName": "Data Product Name already exists.",
+    "requiredApiPath": "API URL Path is required.",
+    "invalidApiPath": "Path must be lowercase and can only include letters, numbers, '-' or '/'.",
+    "requiredApiKey": "Please enter an API Key or generate one using the system.",
+    "invalidApiKey": "API Key must be 32-64 characters long and contain only letters and numbers.",
+    "requiredUsername": "Username is required.",
+    "invalidUsername": "Username contains invalid characters.",
+    "requiredPassword": "Password is required.",
+    "invalidPassword": "Password contains invalid characters.",
+    "requireOutputFieldCheckbox": "At least one field must be selected for output.",
+    "requireOutputFieldName": "Please fill in all required Output Field Names.",
+    "invalidOutputFieldName": "Output Field Names can only contain letters, numbers, and underscores.",
+    "duplicateOutputFieldName": "Output Field Names must be unique.",
+    "invalidSearchParameter": "Searchable parameters must also be output fields.",
+    "invalidStoreError": "Please select at least one data source.",
+    "invalidQueryParameter": "Invalid parameter format. Use key=value format.",
   },
   "error": {
     "apiConnection": "API Connection Error",
@@ -57,5 +92,10 @@ export default {
   "homePage": {
     "schedulingNotEnabled": "Scheduling is not enabled",
     "create": "Create",
+  },
+  "integrationMode": {
+    "single": "Single Output Mode",
+    "merge": "Merge Mode",
+    "join": "Join Mode"
   }
 }
