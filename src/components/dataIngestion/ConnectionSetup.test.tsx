@@ -14,7 +14,12 @@ jest.mock('react-i18next', () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
         'testApiConnection': 'Test Connection',
-        'actions.ok': 'OK'
+        'actions.ok': 'OK',
+        'authMethod.apiKeyValue': 'API Key',
+        'authMethod.username': 'Username',
+        'authMethod.password': 'Password',
+        'authMethod.none': 'None',
+        'authMethod.bearer': 'Bearer',
       };
       return translations[key] || key;
     }
@@ -30,7 +35,7 @@ describe('ConnectionSetup 元件', () => {
     dataFormate: DATA_FORMAT_OPTIONS[0], // 假資料
     interval: INTERVAL_OPTIONS[1],
     dataProcessingMethod: DATA_PROCESSING_METHODS[1].code,
-    authMethod: AUTH_METHOD_OPTIONS[0].code, // 預設使用 Basic 認證
+    authMethod: AUTH_METHOD_OPTIONS[0].code, // 預設使用 None 認證
     apiKey: '',
     username: '',
     password: '',
@@ -180,9 +185,6 @@ describe('ConnectionSetup 元件', () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).toBeNull();
     });
-    
-    // console.log(screen.getByRole('dialog').style);
-    // expect(screen.getByRole('dialog')).toBeNull();  // 對話框已關閉
   });
 
   it('點擊 "Test Connection" 後若 API 連線失敗，應顯示錯誤訊息對話框', async () => {
@@ -288,26 +290,44 @@ describe('ConnectionSetup 元件', () => {
     });
     // 取得認證方式的 radio 按鈕
     const radios = screen.getAllByRole('radio');
-    expect(radios[0]).toBeChecked();    // 第0個應為 Basic 且勾選
-    expect(radios[1]).not.toBeChecked();// 第1個為 API Key/Bearer，未勾選
-    // 模擬點擊第二個認證方式 (切換為 Bearer/API Key)
+    expect(radios[0]).toBeChecked();    // 第0個應為 None 且勾選
+    expect(radios[1]).not.toBeChecked();// 第1個為 API Key，未勾選
+    // 模擬點擊第二個認證方式 (切換為 API Key)
     await act(async () => {
       fireEvent.click(radios[1]);
     });
-    // setStep1Data 應被呼叫，authMethod 更新為新的值 (預期為 'Bearer')
-    expect(setStep1Data).toHaveBeenCalledWith(expect.objectContaining({ authMethod: expect.stringMatching(/Bearer|API Key/) }));
+    // setStep1Data 應被呼叫，authMethod 更新為新的值 (預期為 'API Key')
+    expect(setStep1Data).toHaveBeenCalledWith(expect.objectContaining({ authMethod: expect.stringMatching(/API Key/) }));
     // 模擬父層重新給入更新後的 authMethod 屬性並重新渲染
-    const newStep1Data = { ...baseStep1Data, authMethod: 'Bearer', username: '', password: '' };
+    const newStep1Data = { ...baseStep1Data, authMethod: AUTH_METHOD_OPTIONS[1].code, username: '', password: '' };
     await act(async () => {
       render(<ConnectionSetup {...props} step1Data={newStep1Data} />);
     });
-    // 切換為 Bearer 後，應顯示 API Key 輸入欄位 (id="auth-method-api-key")
+    // 切換為 API Key 後，應顯示 API Key 輸入欄位 (id="auth-method-api-key")
     const apiKeyInput = screen.getByTestId('auth-method-api-key');  // 以空值輸入框搜尋
     expect(apiKeyInput).toBeInTheDocument();
     expect(apiKeyInput.getAttribute('id')).toBe('auth-method-api-key');
-    // 且 Username/Password 輸入欄位在 Bearer 模式下可省略 (不重複出現或被隱藏)
-    // （這裡假定切換後 Username/Password 欄位不再呈現）
+    // 且 Username/Password 輸入欄位在 API Key 模式下不應顯示
     expect(screen.queryByLabelText(/Username/i)).toBeNull();
     expect(screen.queryByLabelText(/Password/i)).toBeNull();
+
+    // 切換為 Basic 認證
+    await act(async () => {
+      fireEvent.click(radios[2]); // 點擊 Basic 認證
+    });
+    // setStep1Data 應被呼叫，authMethod 更新為新的值 (預期為 'Basic')
+    expect(setStep1Data).toHaveBeenCalledWith(expect.objectContaining({ authMethod: expect.stringMatching(/Basic/) }));
+    // 模擬父層重新給入更新後的 authMethod 屬性並重新渲染
+    const newStep1Data2 = { ...baseStep1Data, authMethod: AUTH_METHOD_OPTIONS[2].code, username: '', password: '' };
+    await act(async () => {
+      render(<ConnectionSetup {...props} step1Data={newStep1Data2} />);
+    }
+    );
+    // 切換為 Basic 認證後，應顯示 Username/Password 輸入欄位
+    const usernameInput = screen.getByLabelText(/Username/i);
+    const passwordInput = screen.getByLabelText(/Password/i);
+    
+    expect(usernameInput).toBeInTheDocument();
+    expect(passwordInput).toBeInTheDocument();
   });
 });

@@ -6,7 +6,6 @@ import { InputSwitch } from "primereact/inputswitch";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { useTranslation } from "react-i18next";
-import { DropdownItem } from "../../constants/dropdownOptions";
 import { debounce } from "lodash";
 import jsonata from "jsonata";
 

@@ -65,7 +65,6 @@ const DataPreview: React.FC<DataPreviewProps> = ({ fieldMappings, step1Data, api
           theme="vs-light"
           defaultLanguage="json"
           defaultValue={JSON.stringify(previewData, null, 2)}
-          className='chart-config-editor'
           options={{
             readOnly: true,
             minimap: {

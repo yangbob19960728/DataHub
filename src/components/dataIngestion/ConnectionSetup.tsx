@@ -56,51 +56,6 @@ const ConnectionSetup: React.FC<ConnectionSetupProps> = ({
     setApiData
   });
 
-  // useEffect(() => {
-  //   const fetchExistingNames = async () => {
-  //     const res = await fetch(process.env.API_HOST + '/datahub/datastore-job?nameOnly=true');
-  //     const apiData = await res.json();
-  //     setExistingDataStoreNames(apiData.data.map(i => i.job_name));
-  //   };
-  //   fetchExistingNames();
-  // }, []);
-
-  // useEffect(() => {
-  //   validateStep1Field(step1Data, existingDataStoreNames);
-  // }, [step1Data, existingDataStoreNames]);
-  // const fetchApiData = async () => {
-  //   setLoading(true);
-  //   setApiError(null);
-  //   try {
-  //     const response = await axios.post(`${process.env.API_HOST}/datahub/queryDataSource`, {
-  //       request_url: step1Data.dataEndpoint, // API網址
-  //       request_method: step1Data.requestMethod.code, // HTTP請求方法，或是POST
-  //       authorization_method: step1Data.authMethod, // 認證方法，或是Bearer，Bearer需要搭配api_token_url和api_token_body，若無則為''
-  //       basic_username: step1Data.username,
-  //       basic_password: step1Data.password,
-  //       api_token_url: step1Data.apiKey,
-  //       api_token_body: step1Data.requestParameters,
-  //     })
-  //     // const response = await axios.get("http://172.16.212.27:8082/panel/line")
-  //     setStep1Data({ ...step1Data, testApiConnection: true });
-  //     setApiData(response.data);
-  //     setApiDialogVisible(true);
-  //   } catch (error: any) {
-  //     setApiError(t('error.apiConnection', { message: error.message }));
-  //     setApiDialogVisible(true);
-  //     setApiData(null);
-  //     setStep1Data({ ...step1Data, testApiConnection: false });
-  //     setStep1Errors({ ...step1Errors, testApiConnection: t("testApiConnection.failure") });
-  //   } finally {
-  //     setLoading(false);
-  //     setStep1Touched({ ...step1Touched, testApiConnection: true });
-  //   }
-  // };
-  // useEffect(() => {
-  //   if (step1Data.testApiConnection) {
-  //     setStep1Data({ ...step1Data, testApiConnection: false });
-  //   }
-  // }, [step1Data.dataEndpoint, step1Data.requestMethod, step1Data.authMethod, step1Data.apiKey, step1Data.username, step1Data.password, step1Data.requestParameters]);
   const requiredStyle = {
     color: 'var(--red-400)',
   };
@@ -222,6 +177,7 @@ const ConnectionSetup: React.FC<ConnectionSetupProps> = ({
             </div>
             <div className="field">
               <label
+                id="label-auth-method-password"
                 htmlFor="auth-method-password"
                 className="col-12 mb-0"
               >
@@ -229,7 +185,7 @@ const ConnectionSetup: React.FC<ConnectionSetupProps> = ({
                 {t('authMethod.password')}
               </label>
               <div className="col">
-                <Password id="auth-method-password" type="text" value={step1Data.password}
+                <Password id="auth-method-password" aria-labelledby="label-auth-method-password" type="text" value={step1Data.password}
                   invalid={step1Touched.password && step1Errors.password ? true : false}
                   feedback={false}
                   onChange={(e) => {
